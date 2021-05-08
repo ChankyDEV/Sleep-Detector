@@ -53,3 +53,6 @@ def differentiation(list):
         diff.append(list[i+1]-list[i])
 
     return diff
+
+
+    
