@@ -1,5 +1,5 @@
 import cv2 as cv2
-from csv_reader import read_csv
+from csv_operations import read_csv
 from face_image_processing import getDistanceBetweenEarsAndEyes
 from face_image_processing import getMaximumDistance
 from face_image_processing import getFace

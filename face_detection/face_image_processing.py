@@ -1,4 +1,4 @@
-from csv_reader import read_csv
+from csv_operations import read_csv
 import cv2
 import dlib
 import numpy as np

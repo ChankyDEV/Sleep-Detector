@@ -2,12 +2,12 @@ from eye_detection.eye_detection_processing import cropEye
 from eye_detection.eye_detection_processing import isEyeOpen
 from eye_detection.eye_detection_processing import oneSecondPasssed
 from eye_detection.eye_detection_processing import scaleImage
-import csv_reader as reader
+import csv_operations as reader
 import cv2 as cv2
 import numpy as np
 from move_detection.move_detection import getSpeedInEachSecond
-from move_detection.speed import Speed
 from move_detection.move_detection import isAnyMoveDetected
+from move_detection.move_detection import decideBodypartName
 
 
 
@@ -33,6 +33,10 @@ framesCount = len(eyeX)
 actualFrameNumber = 0
 framesWhileEyeIsOpen = 0
 actualSecond = 0
+isMoving = False
+eyesOpened = False
+dataToSave = []
+
 
 # Main processing
 while actualFrameNumber < framesCount:
@@ -50,11 +54,18 @@ while actualFrameNumber < framesCount:
     if oneSecondPasssed(frameNumber=actualFrameNumber):
         print(("{sec}s").format(sec = actualSecond))
         if framesWhileEyeIsOpen > 0:
+            eyesOpened = True
             print(("eyes opened").format(sec = actualSecond))
+        else:
+            eyesOpened = False
 
-        if isAnyMoveDetected(second=actualSecond,speeds=[leftAnkleSpeeds,rightAnkleSpeeds,leftWristSpeeds,rightWristSpeeds]):
-            print(("move detected").format(sec = actualSecond))                
+        isMoving,bodypartIndex = isAnyMoveDetected(second=actualSecond,speeds=[leftAnkleSpeeds,rightAnkleSpeeds,leftWristSpeeds,rightWristSpeeds])
+        if isMoving:
+            print(("move detected").format(sec = actualSecond))
 
+        bodypartName = decideBodypartName(bodypartIndex)
+        dataToSave.append([actualSecond,isMoving,bodypartName,eyesOpened])
+        
         framesWhileEyeIsOpen=0
         actualSecond+=1
 
@@ -65,7 +76,7 @@ while actualFrameNumber < framesCount:
     if cv2.waitKey(int(1000/fps)) & 0xFF == ord('q'):
         break
 
-
+reader.write_csv(dataToSave)
 
 
     

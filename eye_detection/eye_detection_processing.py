@@ -1,5 +1,5 @@
 
-import csv_reader as reader
+import csv_operations as reader
 import cv2 as cv2
 import numpy as np
 

@@ -4,9 +4,8 @@ from scipy import ndimage
 from .position_data_processing import filterByConfidence
 from .position_data_processing import averagePerSecond
 from .position_data_processing import differentiation
-from csv_reader import read_csv
+from csv_operations import read_csv
 import math
-from .speed import Speed
 
 def getSpeedInEachSecond(filmname,bodypart,threshold):
     x,y,conf = read_csv('data/'+filmname+'_points/'+bodypart+'.csv')
@@ -27,13 +26,27 @@ def getSpeedInEachSecond(filmname,bodypart,threshold):
 
     for second in range(videoTime-1):
         if distances[second]>threshold or distances[second]<-threshold:
-            actualSpeed = Speed(second,distances[second])
+            actualSpeed = (second,distances[second])
             speeds.append(actualSpeed)       
     return speeds        
 
 
 def isAnyMoveDetected(second,speeds):
+    bodypartsLength = len(speeds)
     for bodypart in range(len(speeds)):       
         for s in range(len(speeds[bodypart])):
-            if speeds[bodypart][s].second == second:
-                return True
+            if speeds[bodypart][s][0] == second:
+                return True,bodypart          
+    return False,bodypartsLength
+
+def decideBodypartName(bodypartIndex):
+    if bodypartIndex==0:
+        return 'leftAnkle'
+    if bodypartIndex==1:
+        return 'rightAnkle'                   
+    if bodypartIndex==2:
+        return 'leftWrist'
+    if bodypartIndex==3:
+        return 'rightWrist'
+    if bodypartIndex==4:
+        return 'None'                  
